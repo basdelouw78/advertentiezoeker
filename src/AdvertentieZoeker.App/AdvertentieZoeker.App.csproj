@@ -39,4 +39,15 @@
     <ProjectReference Include="..\AdvertentieZoeker.Core\AdvertentieZoeker.Core.csproj" />
   </ItemGroup>
 
+  <!--
+    Plugin.LocalNotification trekt (via een oudere AndroidX-afhankelijkheid) een oude
+    Xamarin.AndroidX.Collection.Ktx binnen die dezelfde Kotlin-klassen bevat als de
+    nieuwere Xamarin.AndroidX.Collection.Jvm die elders wordt opgehaald. D8/R8 klapt
+    daar tijdens het dexen op ("Type ... is defined multiple times"). Door de ktx-package
+    expliciet naar dezelfde versiereeks te tillen, verdwijnt de duplicatie.
+  -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.4.0.4" />
+  </ItemGroup>
+
 </Project>
