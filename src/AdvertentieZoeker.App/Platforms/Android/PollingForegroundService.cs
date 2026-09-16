@@ -12,7 +12,7 @@ namespace AdvertentieZoeker.App;
 /// Toont verplicht een permanente, onopvallende melding ("Advertentiezoeker actief") en
 /// draait daarbinnen de eigenlijke <see cref="PollingService"/>-lus.
 /// </summary>
-[Service(Exported = false)]
+[Service(Exported = false, ForegroundServiceType = global::Android.Content.PM.ForegroundService.TypeDataSync)]
 public class PollingForegroundService : Service
 {
     private const string ChannelId = "advertentiezoeker_service";

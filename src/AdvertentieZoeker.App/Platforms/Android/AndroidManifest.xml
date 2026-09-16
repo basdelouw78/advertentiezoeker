@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+      Geen handmatige <service>-declaratie hier: PollingForegroundService.cs draagt zelf
+      een [Service(...)]-attribuut, en de build genereert daar automatisch een manifest-
+      entry uit. Beide tegelijk (handmatig én via attribuut) leidde tot een manifest-merge
+      waarin de attribuut-versie (zonder foregroundServiceType) de handmatige overschreef,
+      met een IllegalArgumentException tot gevolg omdat de code wél een type opgaf.
+    -->
     <application android:allowBackup="true" android:icon="@mipmap/appicon" android:roundIcon="@mipmap/appicon_round"
         android:supportsRtl="true">
-        <service android:name=".PollingForegroundService" android:exported="false"
-            android:foregroundServiceType="dataSync" />
     </application>
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
