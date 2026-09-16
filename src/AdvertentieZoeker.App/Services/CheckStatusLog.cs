@@ -68,7 +68,7 @@ public sealed record CheckStatus(
     bool Success,
     int NewListingsCount,
     string? ErrorMessage,
-    IReadOnlyList<SearchCheckStatus> PerSearch);
+    IReadOnlyList<SearchCheckStatus>? PerSearch);
 
 /// <summary>Resultaat van één individuele zoekopdracht binnen de laatste controle-ronde.</summary>
 public sealed record SearchCheckStatus(Guid SearchId, string SearchName, int NewListingsCount, string? ErrorMessage);

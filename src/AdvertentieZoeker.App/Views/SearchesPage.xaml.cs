@@ -50,7 +50,7 @@ public partial class SearchesPage : ContentPage
 
     private static string BuildStatusText(SavedSearch search, CheckStatus? overallStatus)
     {
-        var perSearch = overallStatus?.PerSearch.FirstOrDefault(s => s.SearchId == search.Id);
+        var perSearch = overallStatus?.PerSearch?.FirstOrDefault(s => s.SearchId == search.Id);
         if (perSearch is null)
         {
             return "Nog niet gecontroleerd.";
