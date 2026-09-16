@@ -39,4 +39,19 @@
     <ProjectReference Include="..\AdvertentieZoeker.Core\AdvertentieZoeker.Core.csproj" />
   </ItemGroup>
 
+  <!--
+    Xamarin.GooglePlayServices.Location (via Plugin.LocalNotification) en de rest van de
+    Android-toolchain trekken elk een net iets andere versie van dezelfde AndroidX-artefacten
+    (Collection, Activity) binnen. D8/R8 struikelt daar dan over dubbel gedefinieerde
+    Kotlin-klassen ("Type ... is defined multiple times"). Door deze pakketten expliciet
+    naar dezelfde (nieuwste) versiereeks te tillen, dwingen we NuGet om er telkens maar één
+    exemplaar van op te nemen.
+  -->
+  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
+    <PackageReference Include="Xamarin.AndroidX.Collection" Version="1.6.0.1" />
+    <PackageReference Include="Xamarin.AndroidX.Collection.Jvm" Version="1.6.0.1" />
+    <PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0.1" />
+    <PackageReference Include="Xamarin.AndroidX.Activity" Version="1.13.0.1" />
+  </ItemGroup>
+
 </Project>
