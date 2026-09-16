@@ -5,7 +5,9 @@ namespace AdvertentieZoeker.App;
 public partial class App : Application
 {
     private readonly PollingService _pollingService;
+#if WINDOWS
     private CancellationTokenSource? _pollingCts;
+#endif
 
     public App(PollingService pollingService)
     {
