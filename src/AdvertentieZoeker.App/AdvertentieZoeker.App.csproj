@@ -19,6 +19,17 @@
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'maccatalyst'">15.0</SupportedOSPlatformVersion>
     <SupportedOSPlatformVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">26.0</SupportedOSPlatformVersion>
     <TargetPlatformMinVersion Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'">10.0.17763.0</TargetPlatformMinVersion>
+
+    <!--
+      Zonder dit bouwt Visual Studio (via Fast Deployment) een APK die alleen de
+      processorarchitectuur van het laatst geselecteerde deploy-doel bevat. Stond
+      BlueStacks (x86_64, een pc-emulator) als doel ingesteld, dan krijg je een APK die
+      alleen op x86_64 draait — en dus niet op een echte telefoon (zo goed als altijd
+      arm64). Door hier expliciet beide ARM-architecturen op te nemen, bevat elke Release-
+      build altijd de native bibliotheken die een echte telefoon nodig heeft, ongeacht
+      welk apparaat er in Visual Studio geselecteerd staat.
+    -->
+    <RuntimeIdentifiers Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">android-arm64;android-arm</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
