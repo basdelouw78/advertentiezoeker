@@ -5,7 +5,7 @@ namespace AdvertentieZoeker.App.Services;
 /// <summary>
 /// Draait de controle-cyclus: elke N minuten (instelbaar, standaard 30) worden alle
 /// actieve zoekopdrachten opgevraagd en gemeld via <see cref="MonitorService"/>.
-/// Op Android wordt dit aangeroepen vanuit <see cref="Platforms.Android.PollingForegroundService"/>
+/// Op Android wordt dit aangeroepen vanuit <c>PollingForegroundService</c>
 /// zodat het ook doorloopt als de app op de achtergrond staat; op Windows start
 /// <c>App.xaml.cs</c> dit rechtstreeks als achtergrondtaak zolang de app open is.
 /// </summary>

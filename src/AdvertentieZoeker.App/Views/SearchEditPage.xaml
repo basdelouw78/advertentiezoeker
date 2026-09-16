@@ -41,7 +41,7 @@
             </VerticalStackLayout>
 
             <Label Text="Postcode" FontAttributes="Bold" Margin="0,10,0,0" />
-            <Entry x:Name="ZipCodeEntry" Placeholder="Bijv. 1012AB" MaxLength="6" AutoCapitalizationOn="Auto" />
+            <Entry x:Name="ZipCodeEntry" Placeholder="Bijv. 1012AB" MaxLength="6" />
 
             <Label Text="Maximale afstand (km)" FontAttributes="Bold" />
             <Entry x:Name="DistanceEntry" Placeholder="Bijv. 25 (leeg = heel Nederland)" Keyboard="Numeric" />
