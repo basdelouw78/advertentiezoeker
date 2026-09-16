@@ -1,5 +1,6 @@
 using AdvertentieZoeker.Core.Models;
 using AdvertentieZoeker.Core.Services;
+using Condition = AdvertentieZoeker.Core.Models.Condition;
 
 namespace AdvertentieZoeker.App.Views;
 
