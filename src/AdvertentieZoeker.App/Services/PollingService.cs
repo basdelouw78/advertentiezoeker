@@ -14,12 +14,18 @@ public sealed class PollingService
     private readonly MonitorService _monitorService;
     private readonly ISavedSearchRepository _savedSearchRepository;
     private readonly ISettingsRepository _settingsRepository;
+    private readonly CheckStatusLog _checkStatusLog;
 
-    public PollingService(MonitorService monitorService, ISavedSearchRepository savedSearchRepository, ISettingsRepository settingsRepository)
+    public PollingService(
+        MonitorService monitorService,
+        ISavedSearchRepository savedSearchRepository,
+        ISettingsRepository settingsRepository,
+        CheckStatusLog checkStatusLog)
     {
         _monitorService = monitorService;
         _savedSearchRepository = savedSearchRepository;
         _settingsRepository = settingsRepository;
+        _checkStatusLog = checkStatusLog;
     }
 
     public async Task RunOnceAsync(CancellationToken cancellationToken = default)
@@ -30,7 +36,9 @@ public sealed class PollingService
             return;
         }
 
-        await _monitorService.CheckAllAsync(searches, cancellationToken).ConfigureAwait(false);
+        var results = await _monitorService.CheckAllAsync(searches, cancellationToken).ConfigureAwait(false);
+        var totalNew = results.Values.Sum(listings => listings.Count);
+        await _checkStatusLog.RecordSuccessAsync(totalNew, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task RunForeverAsync(CancellationToken cancellationToken = default)
@@ -49,6 +57,7 @@ public sealed class PollingService
             {
                 // Eén mislukte controle (bijv. geen internet) mag de hele lus niet stoppen.
                 System.Diagnostics.Debug.WriteLine($"Advertentiezoeker: controle mislukt: {ex}");
+                await _checkStatusLog.RecordFailureAsync(ex.Message, cancellationToken).ConfigureAwait(false);
             }
 
             var settings = await _settingsRepository.GetAsync(cancellationToken).ConfigureAwait(false);

@@ -25,6 +25,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ISeenListingRepository>(_ => new JsonSeenListingRepository(Path.Combine(dataDirectory, "gezien")));
         builder.Services.AddSingleton<ISettingsRepository>(_ => new SecureAppSettingsRepository(dataDirectory));
         builder.Services.AddSingleton<FoundListingsLog>(_ => new FoundListingsLog(dataDirectory));
+        builder.Services.AddSingleton<CheckStatusLog>(_ => new CheckStatusLog(dataDirectory));
 
         builder.Services.AddSingleton<INotifier, EmailNotifier>();
         builder.Services.AddSingleton<INotifier, PopupNotifier>();

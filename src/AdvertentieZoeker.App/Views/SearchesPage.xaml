@@ -10,8 +10,14 @@
         <ToolbarItem Text="+ Nieuw" Clicked="OnAddClicked" />
     </ContentPage.ToolbarItems>
 
-    <Grid RowDefinitions="*,Auto">
-        <RefreshView Grid.Row="0" x:Name="RefreshViewControl" Refreshing="OnRefreshing">
+    <Grid RowDefinitions="Auto,*">
+        <Grid Grid.Row="0" Padding="16,10" ColumnDefinitions="*,Auto" ColumnSpacing="10" BackgroundColor="#EDF2EE">
+            <Label Grid.Column="0" x:Name="StatusLabel" Text="Nog niet gecontroleerd." FontSize="13" TextColor="#3A4A40"
+                   VerticalOptions="Center" />
+            <Button Grid.Column="1" Text="Controleer nu" FontSize="12" Padding="10,6" Clicked="OnCheckNowClicked" />
+        </Grid>
+
+        <RefreshView Grid.Row="1" x:Name="RefreshViewControl" Refreshing="OnRefreshing">
             <CollectionView x:Name="SearchesCollectionView">
                 <CollectionView.EmptyView>
                     <VerticalStackLayout Padding="24" Spacing="8" VerticalOptions="Center">
