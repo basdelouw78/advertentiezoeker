@@ -48,7 +48,7 @@ public class PollingForegroundService : Service
         // meegegeven worden, anders gooit het OS een MissingForegroundServiceTypeException.
         if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
         {
-            StartForeground(ForegroundNotificationId, BuildNotification(), global::Android.Content.PM.ForegroundService.DataSync);
+            StartForeground(ForegroundNotificationId, BuildNotification(), global::Android.Content.PM.ForegroundService.TypeDataSync);
         }
         else
         {
