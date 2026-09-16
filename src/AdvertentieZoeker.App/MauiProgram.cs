@@ -2,6 +2,7 @@ using AdvertentieZoeker.App.Services;
 using AdvertentieZoeker.App.Views;
 using AdvertentieZoeker.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Plugin.LocalNotification;
 
 namespace AdvertentieZoeker.App;
