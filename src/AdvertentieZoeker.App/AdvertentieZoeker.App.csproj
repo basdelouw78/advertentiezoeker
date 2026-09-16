@@ -44,14 +44,16 @@
     Android-toolchain trekken elk een net iets andere versie van dezelfde AndroidX-artefacten
     (Collection, Activity) binnen. D8/R8 struikelt daar dan over dubbel gedefinieerde
     Kotlin-klassen ("Type ... is defined multiple times"). Door deze pakketten expliciet
-    naar dezelfde (nieuwste) versiereeks te tillen, dwingen we NuGet om er telkens maar één
-    exemplaar van op te nemen.
+    naar dezelfde versiereeks te tillen, dwingen we NuGet om er telkens maar één exemplaar
+    van op te nemen. Dit project mikt op net8.0-android34.0, dus de versies hieronder zijn
+    bewust de NIEUWSTE releases die dat target framework nog ondersteunen (1.6.0.1 /
+    1.13.0.1 zijn al net9/net10-only en geven een "not compatible"-restorefout).
   -->
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-    <PackageReference Include="Xamarin.AndroidX.Collection" Version="1.6.0.1" />
-    <PackageReference Include="Xamarin.AndroidX.Collection.Jvm" Version="1.6.0.1" />
-    <PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.6.0.1" />
-    <PackageReference Include="Xamarin.AndroidX.Activity" Version="1.13.0.1" />
+    <PackageReference Include="Xamarin.AndroidX.Collection" Version="1.5.0.3" />
+    <PackageReference Include="Xamarin.AndroidX.Collection.Jvm" Version="1.5.0.3" />
+    <PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.5.0.3" />
+    <PackageReference Include="Xamarin.AndroidX.Activity" Version="1.11.0" />
   </ItemGroup>
 
 </Project>
