@@ -43,7 +43,17 @@ public class PollingForegroundService : Service
             return StartCommandResult.Sticky;
         }
 
-        StartForeground(ForegroundNotificationId, BuildNotification());
+        // Sinds Android 14 (API 34) moet het foreground-service-type niet alleen in het
+        // manifest staan (android:foregroundServiceType="dataSync"), maar ook hier expliciet
+        // meegegeven worden, anders gooit het OS een MissingForegroundServiceTypeException.
+        if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
+        {
+            StartForeground(ForegroundNotificationId, BuildNotification(), global::Android.Content.PM.ForegroundService.DataSync);
+        }
+        else
+        {
+            StartForeground(ForegroundNotificationId, BuildNotification());
+        }
 
         _cts = new CancellationTokenSource();
         var pollingService = IPlatformApplication.Current?.Services.GetService<PollingService>();
