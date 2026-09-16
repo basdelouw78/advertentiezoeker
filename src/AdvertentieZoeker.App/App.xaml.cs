@@ -16,6 +16,12 @@ public partial class App : Application
     {
         InitializeComponent();
         _pollingService = pollingService;
+
+        // Deze app heeft alleen een licht kleurenschema; forceer dat ook als het toestel
+        // zelf op donkere modus staat (anders volgen niet-expliciet gestylede besturings-
+        // elementen het systeemthema en wordt bijv. tekst onleesbaar wit-op-wit).
+        UserAppTheme = AppTheme.Light;
+
         MainPage = new AppShell();
     }
 

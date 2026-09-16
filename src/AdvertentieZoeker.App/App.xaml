@@ -29,6 +29,24 @@
                 <Setter Property="CornerRadius" Value="8" />
                 <Setter Property="Padding" Value="14,10" />
             </Style>
+
+            <!--
+              Zonder dit volgt de tekstkleur van Label/Entry/Editor het systeemthema van het
+              toestel (licht/donker). De rest van deze app (Background, kaartjes, enz.) is
+              alleen op een licht thema afgestemd, dus op een telefoon met donkere modus aan
+              werd de tekst wit-op-wit en dus onleesbaar. Vaste, donkere tekstkleur voorkomt dat.
+            -->
+            <Style TargetType="Label">
+                <Setter Property="TextColor" Value="#1A1A1A" />
+            </Style>
+            <Style TargetType="Entry">
+                <Setter Property="TextColor" Value="#1A1A1A" />
+                <Setter Property="PlaceholderColor" Value="Gray" />
+            </Style>
+            <Style TargetType="Editor">
+                <Setter Property="TextColor" Value="#1A1A1A" />
+                <Setter Property="PlaceholderColor" Value="Gray" />
+            </Style>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
