@@ -17,11 +17,13 @@ Je kunt meerdere zoekopdrachten tegelijk laten draaien. Standaard wordt elke
 **30 minuten** gecontroleerd (instelbaar in het instellingenscherm, minimaal
 5 minuten).
 
-Bij het toevoegen van een nieuwe zoekopdracht wordt de eerste controle alleen
-gebruikt om een startpunt vast te leggen — je krijgt dus geen lawine aan
-meldingen voor advertenties die er al lang stonden. Vanaf de tweede controle
-krijg je alleen meldingen voor advertenties die sindsdien nieuw zijn
-verschenen.
+Bij het toevoegen van een nieuwe zoekopdracht wordt de eerste controle gebruikt
+om een startpunt vast te leggen: je krijgt daarvoor geen pop-up of e-mail (dat
+zou een lawine aan meldingen geven voor advertenties die er al lang stonden),
+maar de op dat moment gevonden advertenties verschijnen wél meteen op het
+"Gevonden"-scherm, als directe bevestiging dat de zoekopdracht werkt. Vanaf de
+tweede controle krijg je ook pop-up/e-mail voor advertenties die sindsdien
+nieuw zijn verschenen.
 
 ## Projectstructuur
 

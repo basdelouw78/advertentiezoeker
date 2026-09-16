@@ -17,8 +17,12 @@ public sealed class FoundListingsLog : INotifier
         _filePath = Path.Combine(directory, "gevonden.json");
     }
 
-    public async Task NotifyNewListingsAsync(SavedSearch search, IReadOnlyList<Listing> newListings, CancellationToken cancellationToken = default)
+    public async Task NotifyNewListingsAsync(SavedSearch search, IReadOnlyList<Listing> newListings, bool isFirstRun, CancellationToken cancellationToken = default)
     {
+        // Ook bij de allereerste controle loggen: dat geeft direct zichtbaar bewijs dat de
+        // zoekopdracht werkt, zonder dat de gebruiker daarvoor met pop-ups/e-mail wordt
+        // lastiggevallen voor advertenties die er al lang stonden (dat slaan EmailNotifier
+        // en PopupNotifier bewust over bij isFirstRun).
         if (newListings.Count == 0)
         {
             return;

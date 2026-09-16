@@ -14,9 +14,9 @@ public sealed class EmailNotifier : INotifier
         _settingsRepository = settingsRepository;
     }
 
-    public async Task NotifyNewListingsAsync(SavedSearch search, IReadOnlyList<Listing> newListings, CancellationToken cancellationToken = default)
+    public async Task NotifyNewListingsAsync(SavedSearch search, IReadOnlyList<Listing> newListings, bool isFirstRun, CancellationToken cancellationToken = default)
     {
-        if (newListings.Count == 0)
+        if (newListings.Count == 0 || isFirstRun)
         {
             return;
         }

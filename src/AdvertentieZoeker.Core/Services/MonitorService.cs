@@ -6,9 +6,11 @@ namespace AdvertentieZoeker.Core.Services;
 /// Voert alle actieve zoekopdrachten één keer uit, bepaalt welke advertenties nieuw zijn
 /// sinds de vorige keer, en stuurt die door naar alle geregistreerde notifiers.
 /// Bij de allereerste keer dat een zoekopdracht draait, wordt de huidige stand van zaken
-/// alleen "gebaseline" (opgeslagen als gezien) zonder meldingen te sturen — anders zou je
-/// bij het toevoegen van een zoekopdracht meteen een lawine aan meldingen krijgen voor
-/// advertenties die er al lang stonden.
+/// "gebaseline" (opgeslagen als gezien) én nog steeds doorgestuurd naar de notifiers (met
+/// isFirstRun=true) — zodat een loggende notifier (het "Gevonden"-scherm) meteen laat zien
+/// dat de zoekopdracht werkt, terwijl een storende notifier (pop-up, e-mail) dat kan
+/// negeren. Zonder dat onderscheid zou je bij het toevoegen van een zoekopdracht meteen een
+/// lawine aan pop-ups/e-mails krijgen voor advertenties die er al lang stonden.
 /// </summary>
 public sealed class MonitorService
 {
@@ -31,6 +33,15 @@ public sealed class MonitorService
         if (isFirstRun)
         {
             await _seenListingRepository.AddSeenIdsAsync(search.Id, listings.Select(l => l.Id), cancellationToken).ConfigureAwait(false);
+
+            if (listings.Count > 0)
+            {
+                foreach (var notifier in _notifiers)
+                {
+                    await notifier.NotifyNewListingsAsync(search, listings, isFirstRun: true, cancellationToken).ConfigureAwait(false);
+                }
+            }
+
             return Array.Empty<Listing>();
         }
 
@@ -43,7 +54,7 @@ public sealed class MonitorService
 
             foreach (var notifier in _notifiers)
             {
-                await notifier.NotifyNewListingsAsync(search, newListings, cancellationToken).ConfigureAwait(false);
+                await notifier.NotifyNewListingsAsync(search, newListings, isFirstRun: false, cancellationToken).ConfigureAwait(false);
             }
         }
 

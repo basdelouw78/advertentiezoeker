@@ -15,7 +15,7 @@ public class MonitorServiceTests
     };
 
     [Fact]
-    public async Task CheckAsync_MeldtNietsBijDeAllereersteKeer()
+    public async Task CheckAsync_MeldtGeenNieuweAdvertentiesBijDeAllereersteKeer()
     {
         var client = new FakeMarktplaatsClient([MakeListing("a"), MakeListing("b")]);
         var seenRepo = new InMemorySeenListingRepository();
@@ -25,9 +25,16 @@ public class MonitorServiceTests
 
         var newListings = await monitor.CheckAsync(search);
 
+        // Geen "nieuwe" advertenties gerapporteerd (dat zou pop-up/e-mail triggeren)...
         Assert.Empty(newListings);
-        Assert.Empty(notifier.Calls);
         Assert.Equal(2, (await seenRepo.GetSeenIdsAsync(search.Id)).Count);
+
+        // ...maar de notifiers worden wél aangeroepen met isFirstRun=true en de volledige
+        // huidige lijst, zodat een loggende notifier (Gevonden-scherm) meteen kan tonen dat
+        // de zoekopdracht werkt, terwijl een storende notifier dit zelf kan negeren.
+        var call = Assert.Single(notifier.Calls);
+        Assert.True(call.IsFirstRun);
+        Assert.Equal(["a", "b"], call.NewListings.Select(l => l.Id));
     }
 
     [Fact]
@@ -39,15 +46,17 @@ public class MonitorServiceTests
         var monitor = new MonitorService(client, seenRepo, [notifier]);
         var search = new SavedSearch { Keywords = "fiets" };
 
-        await monitor.CheckAsync(search); // baseline
+        await monitor.CheckAsync(search); // baseline (roept notifiers al aan met isFirstRun=true)
+        notifier.Calls.Clear();
 
         client.Listings = [MakeListing("a"), MakeListing("b"), MakeListing("c")];
         var newListings = await monitor.CheckAsync(search);
 
         Assert.Single(newListings);
         Assert.Equal("c", newListings[0].Id);
-        Assert.Single(notifier.Calls);
-        Assert.Equal(["c"], notifier.Calls[0].NewListings.Select(l => l.Id));
+        var call = Assert.Single(notifier.Calls);
+        Assert.False(call.IsFirstRun);
+        Assert.Equal(["c"], call.NewListings.Select(l => l.Id));
     }
 
     [Fact]
@@ -59,7 +68,9 @@ public class MonitorServiceTests
         var monitor = new MonitorService(client, seenRepo, [notifier]);
         var search = new SavedSearch { Keywords = "fiets" };
 
-        await monitor.CheckAsync(search); // baseline
+        await monitor.CheckAsync(search); // baseline (roept notifiers al aan met isFirstRun=true)
+        notifier.Calls.Clear();
+
         var newListings = await monitor.CheckAsync(search); // zelfde resultaat nogmaals
 
         Assert.Empty(newListings);
@@ -149,11 +160,11 @@ public class MonitorServiceTests
 
     private sealed class RecordingNotifier : INotifier
     {
-        public List<(SavedSearch Search, IReadOnlyList<Listing> NewListings)> Calls { get; } = new();
+        public List<(SavedSearch Search, IReadOnlyList<Listing> NewListings, bool IsFirstRun)> Calls { get; } = new();
 
-        public Task NotifyNewListingsAsync(SavedSearch search, IReadOnlyList<Listing> newListings, CancellationToken cancellationToken = default)
+        public Task NotifyNewListingsAsync(SavedSearch search, IReadOnlyList<Listing> newListings, bool isFirstRun, CancellationToken cancellationToken = default)
         {
-            Calls.Add((search, newListings));
+            Calls.Add((search, newListings, isFirstRun));
             return Task.CompletedTask;
         }
     }
