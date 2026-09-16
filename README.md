@@ -39,7 +39,7 @@ src/
     Views/                    Zoekopdrachten, Zoekopdracht bewerken, Instellingen, Gevonden
     Services/
       PollingService.cs       De controle-lus (elke N minuten)
-      PopupNotifier.cs        Lokale pop-upmelding (Plugin.LocalNotification)
+      PopupNotifier.cs        Lokale pop-upmelding (rechtstreeks native Android/Windows-API, geen plugin)
       FoundListingsLog.cs     Geschiedenis voor het "Gevonden"-scherm
       SecureAppSettingsRepository.cs   SMTP-wachtwoord via beveiligde opslag
     Platforms/Android/

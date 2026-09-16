@@ -29,49 +29,22 @@
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
+  <!--
+    Bewust GEEN pop-upmelding-plugin (zoals Plugin.LocalNotification): die trekt via een
+    verplichte Google Play Services-afhankelijkheid een hele nieuwe generatie AndroidX-
+    bindings binnen die telkens weer op een ander onderdeel botste met de rest van de
+    dependency-graph ("Type ... is defined multiple times", steeds één stap verderop in
+    dezelfde keten). PopupNotifier.cs praat in plaats daarvan rechtstreeks met de native
+    notificatie-API van Android (AndroidX.Core, altijd al onderdeel van elke Android-app)
+    en Windows (Windows App SDK), zonder extra package.
+  -->
   <ItemGroup>
     <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1" />
-    <PackageReference Include="Plugin.LocalNotification" Version="12.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AdvertentieZoeker.Core\AdvertentieZoeker.Core.csproj" />
-  </ItemGroup>
-
-  <!--
-    Plugin.LocalNotification hangt (op elke versie, ook 11.1.4) af van
-    Xamarin.GooglePlayServices.Location, en dat pakket trekt een aanzienlijk nieuwere
-    generatie AndroidX-bindings binnen (Activity, SavedState, Lifecycle.*, Fragment, Core)
-    dan de oudere generatie die verder in de graph blijft hangen (bijv. via de kale
-    net8.0-android-workload zelf). D8/R8 struikelt dan telkens over een AndroidX-onderdeel
-    dat in twee versies tegelijk meekomt ("Type ... is defined multiple times") — steeds
-    één stap verderop in dezelfde afhankelijkheidsketen (eerst Collection, toen Activity,
-    toen SavedState, ...). In plaats van dat één voor één te blijven patchen, hier in één
-    keer de hele keten naar de nieuwste versie die nog net8.0-android34.0 ondersteunt
-    (nieuwere releases van deze pakketten zijn vaak al net9/net10-only).
-  -->
-  <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-    <PackageReference Include="Xamarin.AndroidX.Collection" Version="1.5.0.3" />
-    <PackageReference Include="Xamarin.AndroidX.Collection.Jvm" Version="1.5.0.3" />
-    <PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.5.0.3" />
-    <PackageReference Include="Xamarin.AndroidX.Activity" Version="1.11.0" />
-    <PackageReference Include="Xamarin.AndroidX.SavedState" Version="1.4.0" />
-    <PackageReference Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.4.0" />
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.Common" Version="2.9.4" />
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData.Core" Version="2.9.4" />
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime" Version="2.9.4" />
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModel" Version="2.9.4" />
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModelSavedState" Version="2.9.4" />
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModelSavedState.Android" Version="2.9.4" />
-    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData" Version="2.9.4" />
-    <PackageReference Include="Xamarin.AndroidX.Fragment" Version="1.8.9" />
-    <PackageReference Include="Xamarin.AndroidX.Loader" Version="1.1.0.34" />
-    <PackageReference Include="Xamarin.AndroidX.CustomView" Version="1.2.0.1" />
-    <PackageReference Include="Xamarin.AndroidX.CustomView.PoolingContainer" Version="1.1.0.1" />
-    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.17.0" />
-    <PackageReference Include="Xamarin.AndroidX.Core.Core.Ktx" Version="1.17.0" />
-    <PackageReference Include="Xamarin.AndroidX.Annotation" Version="1.9.1.5" />
   </ItemGroup>
 
 </Project>
