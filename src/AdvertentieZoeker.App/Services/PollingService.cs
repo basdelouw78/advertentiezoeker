@@ -66,11 +66,27 @@ public sealed class PollingService
             {
                 // Eén mislukte controle (bijv. geen internet) mag de hele lus niet stoppen.
                 System.Diagnostics.Debug.WriteLine($"Advertentiezoeker: controle mislukt: {ex}");
-                await _checkStatusLog.RecordFailureAsync(ex.Message, cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    await _checkStatusLog.RecordFailureAsync(ex.Message, cancellationToken).ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Zelfs het wegschrijven van de foutmelding mag de lus niet om zeep helpen.
+                }
             }
 
-            var settings = await _settingsRepository.GetAsync(cancellationToken).ConfigureAwait(false);
-            var interval = TimeSpan.FromMinutes(Math.Max(5, settings.PollIntervalMinutes));
+            var interval = TimeSpan.FromMinutes(30);
+            try
+            {
+                var settings = await _settingsRepository.GetAsync(cancellationToken).ConfigureAwait(false);
+                interval = TimeSpan.FromMinutes(Math.Max(5, settings.PollIntervalMinutes));
+            }
+            catch
+            {
+                // Instellingen niet te lezen? Val terug op de standaard 30 minuten in plaats
+                // van de hele lus te laten crashen.
+            }
 
             try
             {
