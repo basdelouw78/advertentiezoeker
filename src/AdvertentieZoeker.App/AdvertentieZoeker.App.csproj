@@ -40,20 +40,32 @@
   </ItemGroup>
 
   <!--
-    Xamarin.GooglePlayServices.Location (via Plugin.LocalNotification) en de rest van de
-    Android-toolchain trekken elk een net iets andere versie van dezelfde AndroidX-artefacten
-    (Collection, Activity) binnen. D8/R8 struikelt daar dan over dubbel gedefinieerde
-    Kotlin-klassen ("Type ... is defined multiple times"). Door deze pakketten expliciet
-    naar dezelfde versiereeks te tillen, dwingen we NuGet om er telkens maar één exemplaar
-    van op te nemen. Dit project mikt op net8.0-android34.0, dus de versies hieronder zijn
-    bewust de NIEUWSTE releases die dat target framework nog ondersteunen (1.6.0.1 /
-    1.13.0.1 zijn al net9/net10-only en geven een "not compatible"-restorefout).
+    Plugin.LocalNotification hangt (op elke versie, ook 11.1.4) af van
+    Xamarin.GooglePlayServices.Location, en dat pakket trekt een aanzienlijk nieuwere
+    generatie AndroidX-bindings binnen (Activity, SavedState, Lifecycle.*, Fragment, Core)
+    dan de oudere generatie die verder in de graph blijft hangen (bijv. via de kale
+    net8.0-android-workload zelf). D8/R8 struikelt dan telkens over een AndroidX-onderdeel
+    dat in twee versies tegelijk meekomt ("Type ... is defined multiple times") — steeds
+    één stap verderop in dezelfde afhankelijkheidsketen (eerst Collection, toen Activity,
+    toen SavedState, ...). In plaats van dat één voor één te blijven patchen, hier in één
+    keer de hele keten naar de nieuwste versie die nog net8.0-android34.0 ondersteunt
+    (nieuwere releases van deze pakketten zijn vaak al net9/net10-only).
   -->
   <ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
     <PackageReference Include="Xamarin.AndroidX.Collection" Version="1.5.0.3" />
     <PackageReference Include="Xamarin.AndroidX.Collection.Jvm" Version="1.5.0.3" />
     <PackageReference Include="Xamarin.AndroidX.Collection.Ktx" Version="1.5.0.3" />
     <PackageReference Include="Xamarin.AndroidX.Activity" Version="1.11.0" />
+    <PackageReference Include="Xamarin.AndroidX.SavedState" Version="1.4.0" />
+    <PackageReference Include="Xamarin.AndroidX.SavedState.SavedState.Ktx" Version="1.4.0" />
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.Common" Version="2.9.4" />
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData.Core" Version="2.9.4" />
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.Runtime" Version="2.9.4" />
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.ViewModel" Version="2.9.4" />
+    <PackageReference Include="Xamarin.AndroidX.Fragment" Version="1.8.9" />
+    <PackageReference Include="Xamarin.AndroidX.Core" Version="1.17.0" />
+    <PackageReference Include="Xamarin.AndroidX.Core.Core.Ktx" Version="1.17.0" />
+    <PackageReference Include="Xamarin.AndroidX.Annotation" Version="1.9.1.5" />
   </ItemGroup>
 
 </Project>
