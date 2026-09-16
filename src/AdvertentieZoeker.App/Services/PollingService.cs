@@ -37,8 +37,17 @@ public sealed class PollingService
         }
 
         var results = await _monitorService.CheckAllAsync(searches, cancellationToken).ConfigureAwait(false);
-        var totalNew = results.Values.Sum(listings => listings.Count);
-        await _checkStatusLog.RecordSuccessAsync(totalNew, cancellationToken).ConfigureAwait(false);
+
+        var perSearch = searches
+            .Where(s => results.ContainsKey(s.Id))
+            .Select(s =>
+            {
+                var outcome = results[s.Id];
+                return new SearchCheckStatus(s.Id, s.Name, outcome.NewListings.Count, outcome.Error?.Message);
+            })
+            .ToList();
+
+        await _checkStatusLog.RecordSuccessAsync(perSearch, cancellationToken).ConfigureAwait(false);
     }
 
     public async Task RunForeverAsync(CancellationToken cancellationToken = default)

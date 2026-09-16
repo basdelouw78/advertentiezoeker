@@ -50,16 +50,31 @@ public sealed class MonitorService
         return newListings;
     }
 
-    public async Task<IReadOnlyDictionary<Guid, IReadOnlyList<Listing>>> CheckAllAsync(
+    public async Task<IReadOnlyDictionary<Guid, SearchCheckOutcome>> CheckAllAsync(
         IEnumerable<SavedSearch> searches, CancellationToken cancellationToken = default)
     {
-        var result = new Dictionary<Guid, IReadOnlyList<Listing>>();
+        var result = new Dictionary<Guid, SearchCheckOutcome>();
         foreach (var search in searches.Where(s => s.Enabled))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            result[search.Id] = await CheckAsync(search, cancellationToken).ConfigureAwait(false);
+
+            try
+            {
+                var newListings = await CheckAsync(search, cancellationToken).ConfigureAwait(false);
+                result[search.Id] = new SearchCheckOutcome(newListings, null);
+            }
+            catch (Exception ex) when (ex is not OperationCanceledException)
+            {
+                // Eén zoekopdracht die faalt (bijv. een tijdelijke netwerkfout, of Marktplaats
+                // die voor deze specifieke combinatie van parameters iets onverwachts teruggeeft)
+                // mag de andere zoekopdrachten in deze ronde niet blokkeren.
+                result[search.Id] = new SearchCheckOutcome(Array.Empty<Listing>(), ex);
+            }
         }
 
         return result;
     }
 }
+
+/// <summary>Resultaat van één zoekopdracht binnen een controle-ronde.</summary>
+public sealed record SearchCheckOutcome(IReadOnlyList<Listing> NewListings, Exception? Error);

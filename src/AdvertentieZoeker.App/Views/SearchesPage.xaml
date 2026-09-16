@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:AdvertentieZoeker.Core.Models;assembly=AdvertentieZoeker.Core"
+             xmlns:local="clr-namespace:AdvertentieZoeker.App.Views"
              x:Class="AdvertentieZoeker.App.Views.SearchesPage"
              Title="Zoekopdrachten"
              BackgroundColor="{StaticResource Background}">
@@ -27,7 +27,7 @@
                     </VerticalStackLayout>
                 </CollectionView.EmptyView>
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:SavedSearch">
+                    <DataTemplate x:DataType="local:SavedSearchRow">
                         <SwipeView>
                             <SwipeView.RightItems>
                                 <SwipeItems>
@@ -35,13 +35,14 @@
                                                Invoked="OnDeleteSwiped" />
                                 </SwipeItems>
                             </SwipeView.RightItems>
-                            <Grid Padding="16,12" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+                            <Grid Padding="16,12" ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
                                 <Grid.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnItemTapped" />
                                 </Grid.GestureRecognizers>
-                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding Name}" FontSize="16" FontAttributes="Bold" />
-                                <Label Grid.Row="1" Grid.Column="0" Text="{Binding Keywords}" TextColor="Gray" FontSize="13" />
-                                <Switch Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" IsToggled="{Binding Enabled}"
+                                <Label Grid.Row="0" Grid.Column="0" Text="{Binding Search.Name}" FontSize="16" FontAttributes="Bold" />
+                                <Label Grid.Row="1" Grid.Column="0" Text="{Binding Search.Keywords}" TextColor="Gray" FontSize="13" />
+                                <Label Grid.Row="2" Grid.Column="0" Text="{Binding StatusText}" TextColor="{StaticResource Primary}" FontSize="12" />
+                                <Switch Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" IsToggled="{Binding Search.Enabled}"
                                         Toggled="OnEnabledToggled" />
                             </Grid>
                         </SwipeView>

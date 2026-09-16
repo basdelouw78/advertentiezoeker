@@ -81,12 +81,43 @@ public class MonitorServiceTests
         Assert.False(result.ContainsKey(disabled.Id));
     }
 
+    [Fact]
+    public async Task CheckAllAsync_EenFalendeZoekopdrachtBlokkeertDeAndereNiet()
+    {
+        var client = new ThrowingForKeywordMarktplaatsClient(failingKeyword: "kapot", [MakeListing("a")]);
+        var seenRepo = new InMemorySeenListingRepository();
+        var monitor = new MonitorService(client, seenRepo, []);
+        var failing = new SavedSearch { Keywords = "kapot", Enabled = true };
+        var working = new SavedSearch { Keywords = "fiets", Enabled = true };
+
+        var result = await monitor.CheckAllAsync([failing, working]);
+
+        Assert.True(result.ContainsKey(failing.Id));
+        Assert.NotNull(result[failing.Id].Error);
+
+        Assert.True(result.ContainsKey(working.Id));
+        Assert.Null(result[working.Id].Error);
+    }
+
     private sealed class FakeMarktplaatsClient(List<Listing> listings) : IMarktplaatsClient
     {
         public List<Listing> Listings { get; set; } = listings;
 
         public Task<IReadOnlyList<Listing>> SearchAsync(SavedSearch search, CancellationToken cancellationToken = default)
             => Task.FromResult<IReadOnlyList<Listing>>(Listings);
+    }
+
+    private sealed class ThrowingForKeywordMarktplaatsClient(string failingKeyword, List<Listing> listings) : IMarktplaatsClient
+    {
+        public Task<IReadOnlyList<Listing>> SearchAsync(SavedSearch search, CancellationToken cancellationToken = default)
+        {
+            if (search.Keywords == failingKeyword)
+            {
+                throw new HttpRequestException("Simulated failure for this specific search.");
+            }
+
+            return Task.FromResult<IReadOnlyList<Listing>>(listings);
+        }
     }
 
     private sealed class InMemorySeenListingRepository : ISeenListingRepository

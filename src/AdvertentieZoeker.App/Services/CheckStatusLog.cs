@@ -18,14 +18,15 @@ public sealed class CheckStatusLog
         _filePath = Path.Combine(directory, "laatste-controle.json");
     }
 
-    public async Task RecordSuccessAsync(int newListingsCount, CancellationToken cancellationToken = default)
+    public async Task RecordSuccessAsync(IReadOnlyList<SearchCheckStatus> perSearch, CancellationToken cancellationToken = default)
     {
-        await WriteAsync(new CheckStatus(DateTimeOffset.Now, true, newListingsCount, null), cancellationToken).ConfigureAwait(false);
+        var totalNew = perSearch.Sum(s => s.NewListingsCount);
+        await WriteAsync(new CheckStatus(DateTimeOffset.Now, true, totalNew, null, perSearch), cancellationToken).ConfigureAwait(false);
     }
 
     public async Task RecordFailureAsync(string errorMessage, CancellationToken cancellationToken = default)
     {
-        await WriteAsync(new CheckStatus(DateTimeOffset.Now, false, 0, errorMessage), cancellationToken).ConfigureAwait(false);
+        await WriteAsync(new CheckStatus(DateTimeOffset.Now, false, 0, errorMessage, Array.Empty<SearchCheckStatus>()), cancellationToken).ConfigureAwait(false);
     }
 
     public async Task<CheckStatus?> GetAsync(CancellationToken cancellationToken = default)
@@ -62,4 +63,12 @@ public sealed class CheckStatusLog
     }
 }
 
-public sealed record CheckStatus(DateTimeOffset CheckedAt, bool Success, int NewListingsCount, string? ErrorMessage);
+public sealed record CheckStatus(
+    DateTimeOffset CheckedAt,
+    bool Success,
+    int NewListingsCount,
+    string? ErrorMessage,
+    IReadOnlyList<SearchCheckStatus> PerSearch);
+
+/// <summary>Resultaat van één individuele zoekopdracht binnen de laatste controle-ronde.</summary>
+public sealed record SearchCheckStatus(Guid SearchId, string SearchName, int NewListingsCount, string? ErrorMessage);
