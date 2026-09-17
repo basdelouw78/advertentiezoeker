@@ -19,6 +19,7 @@ public class PollingForegroundService : Service
     private const int ForegroundNotificationId = 1;
 
     private CancellationTokenSource? _cts;
+    private PowerManager.WakeLock? _wakeLock;
 
     public static void Start(Context context)
     {
@@ -55,6 +56,16 @@ public class PollingForegroundService : Service
             StartForeground(ForegroundNotificationId, BuildNotification());
         }
 
+        // Een foreground-service voorkomt alleen dat Android het proces killt; het voorkomt
+        // niet dat de CPU in diepe slaap gaat zodra het scherm uitstaat, waardoor de
+        // in-process controle-timer (Task.Delay) gewoon kan blijven "hangen". Een partial
+        // wake lock houdt de CPU actief zolang deze service draait, zodat de controle ook
+        // echt op tijd blijft lopen. Kost wat extra batterij, maar dat is de bewuste
+        // afweging voor een app die betrouwbaar elke N minuten moet controleren.
+        var powerManager = (PowerManager)GetSystemService(PowerService)!;
+        _wakeLock = powerManager.NewWakeLock(WakeLockFlags.Partial, "AdvertentieZoeker::PollingWakeLock");
+        _wakeLock.Acquire();
+
         _cts = new CancellationTokenSource();
         var pollingService = IPlatformApplication.Current?.Services.GetService<PollingService>();
         if (pollingService is not null)
@@ -69,6 +80,13 @@ public class PollingForegroundService : Service
     {
         _cts?.Cancel();
         _cts = null;
+
+        if (_wakeLock?.IsHeld == true)
+        {
+            _wakeLock.Release();
+        }
+        _wakeLock = null;
+
         base.OnDestroy();
     }
 

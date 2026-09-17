@@ -15,5 +15,13 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <!--
+      Zonder wake lock kan de CPU tijdens diepe slaap (scherm uit, Doze) de in-process timer
+      van de controle-lus (Task.Delay) gewoon laten stilstaan — een foreground-service
+      voorkomt alleen dat het proces wordt gekilld, niet dat de CPU in slaap valt. Met deze
+      permissie kan de service een partial wake lock vasthouden zodat de 30-minuten-controle
+      ook echt op tijd blijft lopen als het scherm uit staat.
+    -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
 </manifest>
